@@ -9,8 +9,16 @@ public class Main {
         try {
             mbankWebScraper.signIn();
         } catch (IOException e) {
-            System.out.println("Incorrect signing in");
+            System.out.println("Could not sign in");
             e.printStackTrace();
         }
+        System.out.println("> Signed in!");
+        try {
+            mbankWebScraper.authorize();
+        } catch (IOException e) {
+            System.out.println("Could not authorize");
+            e.printStackTrace();
+        }
+        System.out.println("> authorized!");
     }
 }

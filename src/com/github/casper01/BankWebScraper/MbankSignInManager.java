@@ -24,7 +24,7 @@ class MbankSignInManager {
         return cookies;
     }
 
-    public void signIn() throws IOException {
+    void signIn() throws IOException {
         Connection.Response response = Jsoup.connect(LOGIN_URL)
                 .ignoreContentType(true)
                 .data("UserName", login)
