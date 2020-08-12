@@ -48,7 +48,10 @@ class MbankAuthorizer {
             responseJson = new JSONObject(response.body());
             iteration++;
             System.out.println("Status: " + responseJson.get("Status") + " (" + iteration + ")");
-        } while (!responseJson.get("Status").equals("Authorized") && iteration < STATUS_CHECK_MAX_ITERATIONS);
+        } while (iteration < STATUS_CHECK_MAX_ITERATIONS && (responseJson.get("Status").equals("Prepared") || responseJson.get("Status").equals("PreAuthorized")));
+        if (!responseJson.get("Status").equals("Authorized")) {
+            throw new InvalidObjectException("Could not authenticate");
+        }
     }
 
     private String initTransaction(String authorizationId, String verificationToken) throws IOException {
