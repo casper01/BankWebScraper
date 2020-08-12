@@ -14,6 +14,8 @@ class MbankAuthorizer {
     private static final String SCA_AUTHORIZATION_DATA_URL = "https://online.mbank.pl/pl/Sca/GetScaAuthorizationData";
     private static final String VERIFICATION_URL = "https://online.mbank.pl/pl/setup/data";
     private static final String INIT_AUTHORIZATION_URL = "https://online.mbank.pl/api/auth/initprepare";
+    private static final String START_FINALIZING_AUTHORIZATON_URL = "https://online.mbank.pl/api/auth/execute";
+    private static final String FINALIZE_AUTHORIZATION_URL = "https://online.mbank.pl/pl/Sca/FinalizeAuthorization";
     private static final String AUTHORIZATION_STATUS_URL = "https://online.mbank.pl/api/auth/status";
     private static final int STATUS_CHECK_INTERVAL_MS = 1000;
     private static final int STATUS_CHECK_MAX_ITERATIONS = 300;
@@ -28,6 +30,19 @@ class MbankAuthorizer {
         String verificationToken = getRequestVerificationToken();
         String transactionId = initTransaction(authorizationId, verificationToken);
         waitForTransactionAuthorization(transactionId);
+        startFinalizingTransaction(verificationToken);
+        finalizeAuthorization(authorizationId, verificationToken);
+    }
+
+    private void startFinalizingTransaction(String token) throws IOException {
+        Connection.Response conn = Jsoup.connect(START_FINALIZING_AUTHORIZATON_URL)
+                .header("x-request-verification-token", token)
+                .header("content-type", "application/json")
+                .requestBody("{}")
+                .ignoreContentType(true)
+                .cookies(cookies)
+                .method(Connection.Method.POST)
+                .execute();
     }
 
     private void waitForTransactionAuthorization(String transactionId) throws IOException {
@@ -52,6 +67,21 @@ class MbankAuthorizer {
         if (!responseJson.get("Status").equals("Authorized")) {
             throw new InvalidObjectException("Could not authenticate");
         }
+    }
+
+    private void finalizeAuthorization(String authorizationId, String token) throws IOException {
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("scaAuthorizationId", authorizationId);
+
+        Connection.Response response = Jsoup.connect(FINALIZE_AUTHORIZATION_URL)
+                .header("content-type", "application/json")
+                .header("x-request-verification-token", token)
+                .requestBody(requestBody.toString())
+                .ignoreContentType(true)
+                .cookies(cookies)
+                .method(Connection.Method.POST)
+                .execute();
+        cookies = response.cookies();
     }
 
     private String initTransaction(String authorizationId, String verificationToken) throws IOException {
