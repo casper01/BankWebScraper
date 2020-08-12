@@ -1,6 +1,7 @@
 package com.github.casper01.BankWebScraper;
 
 import java.io.IOException;
+import java.util.Collection;
 
 public class Main {
 
@@ -20,5 +21,15 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println("> authorized!");
+        try {
+            Collection<BankAccount> bankAccounts = mbankWebScraper.getBankAccounts();
+            for (BankAccount bankAccount : bankAccounts) {
+                System.out.println(bankAccount.getName() + ": " + bankAccount.getBalance());
+            }
+        } catch (IOException e) {
+            System.out.println("Could not get bank accounts");
+            e.printStackTrace();
+        }
+
     }
 }
