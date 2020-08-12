@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class MbankAuthorizer {
-    private static final String SCA_AUTHORIZATION_URL_DATA_URL = "https://online.mbank.pl/pl/Sca/GetScaAuthorizationData";
+    private static final String SCA_AUTHORIZATION_DATA_URL = "https://online.mbank.pl/pl/Sca/GetScaAuthorizationData";
     private static final String VERIFICATION_URL = "https://online.mbank.pl/pl/setup/data";
     private static final String INIT_AUTHORIZATION_URL = "https://online.mbank.pl/api/auth/initprepare";
     private static final String AUTHORIZATION_STATUS_URL = "https://online.mbank.pl/api/auth/status";
@@ -32,7 +32,7 @@ class MbankAuthorizer {
 
     private void waitForTransactionAuthorization(String transactionId) throws IOException {
         JSONObject responseJson;
-        int it = 0;
+        int iteration = 0;
         do {
             try {
                 Thread.sleep(STATUS_CHECK_INTERVAL_MS);
@@ -40,37 +40,54 @@ class MbankAuthorizer {
                 e.printStackTrace();
             }
             Connection.Response response = Jsoup.connect(AUTHORIZATION_STATUS_URL)
-                    .timeout(10 * 1000)
                     .ignoreContentType(true)
-                    .followRedirects(true)
                     .cookies(cookies)
                     .data("TranId", transactionId)
                     .method(Connection.Method.POST)
                     .execute();
             responseJson = new JSONObject(response.body());
-            it++;
-            System.out.println("Status: " + responseJson.get("Status") + " (" + it + ")");
-        } while (!responseJson.get("Status").equals("Authorized") && it < STATUS_CHECK_MAX_ITERATIONS);
+            iteration++;
+            System.out.println("Status: " + responseJson.get("Status") + " (" + iteration + ")");
+        } while (!responseJson.get("Status").equals("Authorized") && iteration < STATUS_CHECK_MAX_ITERATIONS);
     }
 
     private String initTransaction(String authorizationId, String verificationToken) throws IOException {
-        String body = "{\"Url\":\"sca/authorization/disposable\",\"Method\":\"POST\",\"Data\":{\"ScaAuthorizationId\":\"" + authorizationId + "\"}}";
+        String requestBody = getInitTransactionBody(authorizationId);
 
         Connection.Response response = Jsoup.connect(INIT_AUTHORIZATION_URL)
                 .header("x-request-verification-token", verificationToken)
-                .header("content-type", "application/json; charset=utf-8")
+                .header("content-type", "application/json")
                 .ignoreContentType(true)
                 .cookies(cookies)
-                .requestBody(body)
+                .requestBody(requestBody)
                 .method(Connection.Method.POST)
                 .execute();
-        JSONObject ans = new JSONObject(response.body());
-        System.out.println("TODO: init trans json: " + ans.toString());
-        return ans.get("TranId").toString();
+        JSONObject responseJson;
+        String transactionId;
+        try {
+            responseJson = new JSONObject(response.body());
+            transactionId = responseJson.get("TranId").toString();
+        } catch (JSONException ex) {
+            throw new InvalidObjectException("Invalid data returned from server");
+        }
+        System.out.println("TODO: init trans json: " + responseJson.toString());
+        return transactionId;
+    }
+
+    private String getInitTransactionBody(String authorizationId) {
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("Url", "sca/authorization/disposable");
+        requestBody.put("Method", "POST");
+
+        JSONObject dataBody = new JSONObject();
+        dataBody.put("ScaAuthorizationId", authorizationId);
+        requestBody.put("Data", dataBody);
+
+        return requestBody.toString();
     }
 
     private String getScaAuthorizationId() throws IOException {
-        Connection.Response response = Jsoup.connect(SCA_AUTHORIZATION_URL_DATA_URL)
+        Connection.Response response = Jsoup.connect(SCA_AUTHORIZATION_DATA_URL)
                 .ignoreContentType(true)
                 .cookies(cookies)
                 .method(Connection.Method.POST)
