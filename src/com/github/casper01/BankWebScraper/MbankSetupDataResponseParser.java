@@ -3,7 +3,7 @@ package com.github.casper01.BankWebScraper;
 import org.jsoup.Connection;
 
 
-public class MbankSetupDataResponseParser extends MbankJsonResponseParser {
+class MbankSetupDataResponseParser extends MbankJsonResponseParser {
     private static final String ANTI_FORGERY_TOKEN_KEY = "antiForgeryToken";
     private static final String ERROR_MESSAGE = "Incorrect setup/data response";
 

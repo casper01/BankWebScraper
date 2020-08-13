@@ -3,7 +3,7 @@ package com.github.casper01.BankWebScraper;
 import org.jsoup.Connection;
 
 
-public class MbankJsonLoginResponseParser extends MbankJsonResponseParser {
+class MbankJsonLoginResponseParser extends MbankJsonResponseParser {
     private static final String SUCCESSFUL_KEY = "successful";
     private static final String ERROR_MESSAGE_KEY = "errorMessageBody";
 
@@ -12,6 +12,9 @@ public class MbankJsonLoginResponseParser extends MbankJsonResponseParser {
     }
 
     boolean isSuccessful() {
+        if (!getJSON().has(SUCCESSFUL_KEY)) {
+            throw new WebScraperException();
+        }
         return (boolean) getJSON().get(SUCCESSFUL_KEY);
     }
 
@@ -21,7 +24,7 @@ public class MbankJsonLoginResponseParser extends MbankJsonResponseParser {
 
     String getErrorMessage() {
         if (!hasErrorMessage()) {
-            throw new WebScraperException("Error mesage does not exist");
+            throw new WebScraperException("Error message does not exist");
         }
         return getJSON().get(ERROR_MESSAGE_KEY).toString();
     }
