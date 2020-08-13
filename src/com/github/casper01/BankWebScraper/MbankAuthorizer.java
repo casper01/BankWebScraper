@@ -1,12 +1,10 @@
 package com.github.casper01.BankWebScraper;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +51,7 @@ class MbankAuthorizer {
     private void waitForTransactionAuthorization(String transactionId) throws IOException {
         JSONObject responseJson;
         int iteration = 0;
+        String transactionStatus;
         do {
             try {
                 Thread.sleep(STATUS_CHECK_INTERVAL_MS);
@@ -66,18 +65,17 @@ class MbankAuthorizer {
                     .method(Connection.Method.POST)
                     .execute();
             responseJson = new JSONObject(response.body());
+            transactionStatus = responseJson.get("Status").toString();
             iteration++;
-            System.out.println("Status: " + responseJson.get("Status") + " (" + iteration + ")");
-        } while (iteration < STATUS_CHECK_MAX_ITERATIONS && (responseJson.get("Status").equals("Prepared") || responseJson.get("Status").equals("PreAuthorized")));
-        if (!responseJson.get("Status").equals("Authorized")) {
-            throw new InvalidObjectException("Could not authenticate");
+        } while (iteration < STATUS_CHECK_MAX_ITERATIONS && (transactionStatus.equals("Prepared") || transactionStatus.equals("PreAuthorized")));
+        if (!transactionStatus.equals("Authorized")) {
+            throw new WebScraperException("Could not authenticate");
         }
     }
 
     private void finalizeAuthorization(String authorizationId, String token) throws IOException {
         JSONObject requestBody = new JSONObject();
         requestBody.put("scaAuthorizationId", authorizationId);
-
         Connection.Response response = Jsoup.connect(FINALIZE_AUTHORIZATION_URL)
                 .header("content-type", "application/json")
                 .header("x-request-verification-token", token)
@@ -91,7 +89,6 @@ class MbankAuthorizer {
 
     private String initTransaction(String authorizationId, String verificationToken) throws IOException {
         String requestBody = getInitTransactionBody(authorizationId);
-
         Connection.Response response = Jsoup.connect(INIT_AUTHORIZATION_URL)
                 .header("x-request-verification-token", verificationToken)
                 .header("content-type", "application/json")
@@ -108,7 +105,6 @@ class MbankAuthorizer {
         JSONObject requestBody = new JSONObject();
         requestBody.put("Url", "sca/authorization/disposable");
         requestBody.put("Method", "POST");
-
         JSONObject dataBody = new JSONObject();
         dataBody.put("ScaAuthorizationId", authorizationId);
         requestBody.put("Data", dataBody);

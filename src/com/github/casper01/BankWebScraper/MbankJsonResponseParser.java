@@ -4,16 +4,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 
-import java.io.InvalidObjectException;
-
 abstract class MbankJsonResponseParser {
-    JSONObject response;
+    private final JSONObject response;
 
-    MbankJsonResponseParser(Connection.Response response) throws InvalidObjectException {
+    MbankJsonResponseParser(Connection.Response response)  {
         try {
             this.response = new JSONObject(response.body());
         } catch (JSONException ex) {
-            throw new InvalidObjectException("Request is not correct json");
+            throw new WebScraperException("Request is not correct json");
         }
     }
 

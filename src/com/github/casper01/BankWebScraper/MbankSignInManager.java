@@ -2,10 +2,13 @@ package com.github.casper01.BankWebScraper;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
-import javax.security.auth.login.LoginException;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class MbankSignInManager {
@@ -23,7 +26,7 @@ class MbankSignInManager {
         return cookies;
     }
 
-    void signIn() throws IOException, LoginException {
+    void signIn() throws IOException {
         Connection.Response response = Jsoup.connect(LOGIN_URL)
                 .ignoreContentType(true)
                 .data("UserName", login)
@@ -33,9 +36,9 @@ class MbankSignInManager {
         cookies = response.cookies();
         MbankJsonLoginResponseParser mbankJsonLoginResponseParser = new MbankJsonLoginResponseParser(response);
         if (!mbankJsonLoginResponseParser.isSuccessful()) {
-            if (mbankJsonLoginResponseParser.hasErrorMessage()) {
+            if (mbankJsonLoginResponseParser.hasErrorMessage())
                 throw new LoginException(mbankJsonLoginResponseParser.getErrorMessage());
-            } else {
+            else {
                 throw new LoginException("Could not sign in");
             }
         }

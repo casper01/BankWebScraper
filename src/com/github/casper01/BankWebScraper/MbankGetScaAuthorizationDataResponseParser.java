@@ -2,19 +2,18 @@ package com.github.casper01.BankWebScraper;
 
 import org.jsoup.Connection;
 
-import java.io.InvalidObjectException;
 
 class MbankGetScaAuthorizationDataResponseParser extends MbankJsonResponseParser {
     private static final String SCA_AUTHORIZATION_ID_KEY = "ScaAuthorizationId";
     private static final String ERROR_MESSAGE = "Incorrect GetScaAuthorizationData response";
 
-    MbankGetScaAuthorizationDataResponseParser(Connection.Response response) throws InvalidObjectException {
+    MbankGetScaAuthorizationDataResponseParser(Connection.Response response) {
         super(response);
     }
 
-    String getScaAuthorizationId() throws InvalidObjectException {
+    String getScaAuthorizationId() {
         if (!getJSON().has(SCA_AUTHORIZATION_ID_KEY)) {
-            throw new InvalidObjectException(ERROR_MESSAGE);
+            throw new WebScraperException(ERROR_MESSAGE);
         }
         return getJSON().get(SCA_AUTHORIZATION_ID_KEY).toString();
     }

@@ -1,35 +1,19 @@
 package com.github.casper01.BankWebScraper;
 
-import java.io.IOException;
 import java.util.Collection;
 
 public class Main {
 
     public static void main(String[] args) {
         MbankWebScraper mbankWebScraper = new MbankWebScraper(MbankCredentials.LOGIN, MbankCredentials.PASSWORD);
-        try {
-            mbankWebScraper.signIn();
-        } catch (IOException e) {
-            System.out.println("Could not sign in");
-            e.printStackTrace();
-        }
+        mbankWebScraper.signIn();
         System.out.println("> Signed in!");
-        try {
-            mbankWebScraper.authorize();
-        } catch (IOException e) {
-            System.out.println("Could not authorize");
-            e.printStackTrace();
+        mbankWebScraper.authorize();
+        System.out.println("> Authorized!");
+        Collection<BankAccount> bankAccounts = mbankWebScraper.getBankAccounts();
+        System.out.println("> Accounts downloaded:");
+        for (BankAccount bankAccount : bankAccounts) {
+            System.out.println(bankAccount.getName() + ": " + bankAccount.getBalance());
         }
-        System.out.println("> authorized!");
-        try {
-            Collection<BankAccount> bankAccounts = mbankWebScraper.getBankAccounts();
-            for (BankAccount bankAccount : bankAccounts) {
-                System.out.println(bankAccount.getName() + ": " + bankAccount.getBalance());
-            }
-        } catch (IOException e) {
-            System.out.println("Could not get bank accounts");
-            e.printStackTrace();
-        }
-
     }
 }
