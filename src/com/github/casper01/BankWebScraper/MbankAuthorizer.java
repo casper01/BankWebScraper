@@ -100,16 +100,8 @@ class MbankAuthorizer {
                 .requestBody(requestBody)
                 .method(Connection.Method.POST)
                 .execute();
-        JSONObject responseJson;
-        String transactionId;
-        try {
-            responseJson = new JSONObject(response.body());
-            transactionId = responseJson.get("TranId").toString();
-        } catch (JSONException ex) {
-            throw new InvalidObjectException("Invalid data returned from server");
-        }
-        System.out.println("TODO: init trans json: " + responseJson.toString());
-        return transactionId;
+        MbankInitprepareResponseParser mbankInitprepareResponseParser = new MbankInitprepareResponseParser(response);
+        return mbankInitprepareResponseParser.getTransactionId();
     }
 
     private String getInitTransactionBody(String authorizationId) {
@@ -130,18 +122,8 @@ class MbankAuthorizer {
                 .cookies(cookies)
                 .method(Connection.Method.POST)
                 .execute();
-
-        JSONObject responseJson;
-        String authorizationId;
-        try {
-            responseJson = new JSONObject(response.body());
-            authorizationId = responseJson.get("ScaAuthorizationId").toString();
-        } catch (JSONException ex) {
-            throw new InvalidObjectException("Invalid data returned from server");
-        }
-        // TODO: String pewnie do stalej
-        // TODO: teksty wyjatkow do stalej...?
-        return authorizationId;
+        MbankGetScaAuthorizationDataResponseParser mbankGetScaAuthorizationDataResponseParser = new MbankGetScaAuthorizationDataResponseParser(response);
+        return mbankGetScaAuthorizationDataResponseParser.getScaAuthorizationId();
     }
 
     private String getRequestVerificationToken() throws IOException {
@@ -150,15 +132,7 @@ class MbankAuthorizer {
                 .method(Connection.Method.GET)
                 .cookies(cookies)
                 .execute();
-
-        JSONObject responseJson;
-        String verificationToken;
-        try {
-            responseJson = new JSONObject(response.body());
-            verificationToken = responseJson.get("antiForgeryToken").toString();
-        } catch (JSONException ex) {
-            throw new InvalidObjectException("Invalid data returned from server");
-        }
-        return verificationToken;
+        MbankSetupDataResponseParser mbankSetupDataResponseParser = new MbankSetupDataResponseParser(response);
+        return mbankSetupDataResponseParser.getAntiForgeryToken();
     }
 }

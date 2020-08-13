@@ -1,11 +1,10 @@
 package com.github.casper01.BankWebScraper;
 
-import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
+import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ class MbankSignInManager {
         return cookies;
     }
 
-    void signIn() throws IOException {
+    void signIn() throws IOException, LoginException {
         Connection.Response response = Jsoup.connect(LOGIN_URL)
                 .ignoreContentType(true)
                 .data("UserName", login)
@@ -32,15 +31,13 @@ class MbankSignInManager {
                 .method(Connection.Method.POST)
                 .execute();
         cookies = response.cookies();
-        verifyResponse(new JSONObject(response.body()));
-    }
-
-    private void verifyResponse(JSONObject response) throws InvalidObjectException {
-        System.out.println(response.toString());
-        boolean status = (boolean) response.get("successful");
-        if (!status) {
-            String errorMsg = response.get("errorMessageBody").toString();
-            throw new InvalidObjectException(errorMsg);
+        MbankJsonLoginResponseParser mbankJsonLoginResponseParser = new MbankJsonLoginResponseParser(response);
+        if (!mbankJsonLoginResponseParser.isSuccessful()) {
+            if (mbankJsonLoginResponseParser.hasErrorMessage()) {
+                throw new LoginException(mbankJsonLoginResponseParser.getErrorMessage());
+            } else {
+                throw new LoginException("Could not sign in");
+            }
         }
     }
 }
