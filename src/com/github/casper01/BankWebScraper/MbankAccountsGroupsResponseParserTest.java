@@ -11,7 +11,7 @@ class MbankAccountsGroupsResponseParserTest {
     private MbankAccountsGroupsResponseParser mbankSetupDataResponseParser;
 
     @Test
-    void getAllAccounts_OneAccountInfo_ReturnsOneElementCollection() {
+    void getAllAccountsOneAccountInfoReturnsOneElementCollection() {
         String body = "{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.01,\"currency\":\"PLN\"},\"accountsGroups\":[{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.01,\"currency\":\"PLN\"},\"header\":\"Personal\",\"accounts\":[{\"primaryAction\":{\"name\":null,\"url\":\"/pl/Accounts/Accounts/GetTransferDomestic\"},\"balance\":0.01,\"name\":\"mKonto Intensive\",\"currency\":\"PLN\",\"customName\":\"\",\"id\":\"xxxxxxxxxxxxxxxxxxxxxxxIDxxxxxxxxxxxxxxxxxxxxxxxxx\",\"accountNumber\":\"xx xxxx xxxx xxxx xxxx xxxx xxxx\"}]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Vat\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Foreigns\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Authorities\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Others\",\"accounts\":[]}]}";
         Connection.Response response = new ConnectionResponseMock(body);
         mbankSetupDataResponseParser = new MbankAccountsGroupsResponseParser(response);
@@ -22,7 +22,7 @@ class MbankAccountsGroupsResponseParserTest {
     }
 
     @Test
-    void getAllAccounts_ZeroAccountInfos_ReturnsEmptyCollection() {
+    void getAllAccountsZeroAccountInfosReturnsEmptyCollection() {
         String body = "{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.00,\"currency\":\"PLN\"},\"accountsGroups\":[{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.01,\"currency\":\"PLN\"},\"header\":\"Personal\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Vat\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Foreigns\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Authorities\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Others\",\"accounts\":[]}]}";
         Connection.Response response = new ConnectionResponseMock(body);
         mbankSetupDataResponseParser = new MbankAccountsGroupsResponseParser(response);
@@ -31,7 +31,7 @@ class MbankAccountsGroupsResponseParserTest {
     }
 
     @Test
-    void constructor_EmptyResponse_ThrowsException() {
+    void constructorEmptyResponseThrowsException() {
         String body = "";
         Connection.Response response = new ConnectionResponseMock(body);
         Assertions.assertThrows(WebScraperException.class, () -> mbankSetupDataResponseParser = new MbankAccountsGroupsResponseParser(response));

@@ -8,7 +8,7 @@ class MbankGetScaAuthorizationDataResponseParserTest {
     private MbankGetScaAuthorizationDataResponseParser mbankSetupDataResponseParser;
 
     @Test
-    void getScaAuthorizationId_ExistingScaAuthorizationId_ReturnsToken() {
+    void getScaAuthorizationIdExistingScaAuthorizationIdReturnsToken() {
         String body = "{\"TrustedDeviceAddingAllowed\":false,\"ScaAuthorizationId\":\"7FMvaX7DDB8PnRixxxxxxxxxxxxxxxxxxxxxxxxxxxx1aHvcq24Qf3tS4gAEbDUO\"}";
         Connection.Response response = new ConnectionResponseMock(body);
         mbankSetupDataResponseParser = new MbankGetScaAuthorizationDataResponseParser(response);
@@ -18,7 +18,7 @@ class MbankGetScaAuthorizationDataResponseParserTest {
     }
 
     @Test
-    void getScaAuthorizationId_NotExistingScaAuthorizationId_ThrowsException() {
+    void getScaAuthorizationIdNotExistingScaAuthorizationIdThrowsException() {
         String body = "{\"TrustedDeviceAddingAllowed\":false,\"DifferentThanScaAuthorizationId\":\"7FMvaX7DDB8PnRixxxxxxxxxxxxxxxxxxxxxxxxxxxx1aHvcq24Qf3tS4gAEbDUO\"}";
         Connection.Response response = new ConnectionResponseMock(body);
         mbankSetupDataResponseParser = new MbankGetScaAuthorizationDataResponseParser(response);
@@ -26,7 +26,7 @@ class MbankGetScaAuthorizationDataResponseParserTest {
     }
 
     @Test
-    void constructor_EmptyResponse_ThrowsException() {
+    void constructorEmptyResponseThrowsException() {
         String body = "";
         Connection.Response response = new ConnectionResponseMock(body);
         Assertions.assertThrows(WebScraperException.class, () -> mbankSetupDataResponseParser = new MbankGetScaAuthorizationDataResponseParser(response));
