@@ -15,6 +15,9 @@ abstract class MbankJsonResponseParser {
         }
     }
 
+    /**
+     * @return request in JSON format
+     */
     protected JSONObject getJSON() {
         return response;
     }

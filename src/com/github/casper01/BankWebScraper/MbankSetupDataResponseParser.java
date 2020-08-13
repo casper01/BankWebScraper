@@ -11,6 +11,10 @@ class MbankSetupDataResponseParser extends MbankJsonResponseParser {
         super(response);
     }
 
+    /**
+     * Get anti forgery token from the request passed in constructor
+     * @return Anti forgery token
+     */
     String getAntiForgeryToken() {
         if (!getJSON().has(ANTI_FORGERY_TOKEN_KEY)) {
             throw new WebScraperException(ERROR_MESSAGE);

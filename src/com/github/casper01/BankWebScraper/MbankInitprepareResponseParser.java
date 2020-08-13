@@ -10,6 +10,10 @@ class MbankInitprepareResponseParser extends MbankJsonResponseParser {
         super(response);
     }
 
+    /**
+     * Get transaction id from the request passed in constructor
+     * @return transaction id
+     */
     String getTransactionId() {
         if (!getJSON().has(TRANSACTION_ID_KEY)) {
             throw new WebScraperException(ERROR_MESSAGE);
