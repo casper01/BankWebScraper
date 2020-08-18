@@ -19,10 +19,6 @@ class MbankAccountsGroupsResponseParser extends MbankJsonResponseParser {
         super(response);
     }
 
-    /**
-     * Get all accounts from the response passed in constructor
-     * @return Collection of bank accounts.
-     */
     Collection<BankAccount> getAllAccounts() {
         if (!getJSON().has(ACCOUNTS_GROUP_KEY)) {
             throw new WebScraperException(ERROR_MESSAGE);

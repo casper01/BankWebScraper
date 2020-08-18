@@ -26,10 +26,6 @@ class MbankSignInManager {
         return cookies;
     }
 
-    /**
-     * Send sign in request to the mBank server with credentials passed in constructor
-     * @throws IOException
-     */
     void signIn() throws IOException {
         Connection.Response response = Jsoup.connect(LOGIN_URL)
                 .ignoreContentType(true)

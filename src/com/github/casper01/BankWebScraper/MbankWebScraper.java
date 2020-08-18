@@ -17,9 +17,6 @@ public class MbankWebScraper {
         mbankAccountManager = new MbankAccountManager();
     }
 
-    /**
-     * Sign in to the mBank with the credentials passed in constructor
-     */
     public void signIn() {
         try {
             mbankSignInManager.signIn();
@@ -28,10 +25,6 @@ public class MbankWebScraper {
         }
     }
 
-    /**
-     * Authorize the signed in user with the use of smartphone with mBank app.
-     * The user must be signed in to perform this operation.
-     */
     public void authorize() {
         System.out.println("Please authorize signing in by your phone");
         mbankAuthorizer.setCookies(mbankSignInManager.getCookies());
@@ -42,11 +35,6 @@ public class MbankWebScraper {
         }
     }
 
-    /**
-     * Get information of all accounts of the user.
-     * The user must be logged in and authorized to perform this operation.
-     * @return Collection of bank accounts
-     */
     public Collection<BankAccount> getBankAccounts() {
         mbankAccountManager.setCookies(mbankAuthorizer.getCookies());
         try {

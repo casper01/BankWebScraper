@@ -24,18 +24,10 @@ class MbankAuthorizer {
         return cookies;
     }
 
-    /**
-     * Overwrite cookies used in requests.
-     * @param cookies new cookies that will be used in future requests.
-     */
     public void setCookies(Map<String, String> cookies) {
         this.cookies = cookies;
     }
 
-    /**
-     * Authorize logged in user with the use of smartphone with mBank app.
-     * @throws IOException
-     */
     void authorizeByPhone() throws IOException {
         String authorizationId = getScaAuthorizationId();
         String verificationToken = getRequestVerificationToken();

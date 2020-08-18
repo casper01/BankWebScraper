@@ -11,10 +11,6 @@ class MbankGetScaAuthorizationDataResponseParser extends MbankJsonResponseParser
         super(response);
     }
 
-    /**
-     * Get Sca authorization id from the request passed in constructor
-     * @return Sca authorization id
-     */
     String getScaAuthorizationId() {
         if (!getJSON().has(SCA_AUTHORIZATION_ID_KEY)) {
             throw new WebScraperException(ERROR_MESSAGE);

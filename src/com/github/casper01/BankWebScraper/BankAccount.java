@@ -14,11 +14,6 @@ public class BankAccount {
         return name;
     }
 
-    /**
-     * Create class representing bank account.
-     * @param name Name of the account
-     * @param balance Actual balance of the account
-     */
     public BankAccount(String name, double balance) {
         this.name = name;
         this.balance = balance;
