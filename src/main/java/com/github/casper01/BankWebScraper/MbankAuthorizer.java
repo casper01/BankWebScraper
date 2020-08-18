@@ -15,6 +15,7 @@ class MbankAuthorizer {
     private static final String START_FINALIZING_AUTHORIZATON_URL = "https://online.mbank.pl/api/auth/execute";
     private static final String FINALIZE_AUTHORIZATION_URL = "https://online.mbank.pl/pl/Sca/FinalizeAuthorization";
     private static final String AUTHORIZATION_STATUS_URL = "https://online.mbank.pl/api/auth/status";
+    private static final String AUTHORIZE_ERROR_MESSAGE = "Unable to authorize";
     private static final int STATUS_CHECK_INTERVAL_MS = 1000;
     private static final int STATUS_CHECK_MAX_ITERATIONS = 300;
     private Map<String, String> cookies = new HashMap<>();
@@ -28,7 +29,7 @@ class MbankAuthorizer {
         this.cookies = cookies;
     }
 
-    void authorizeByPhone() throws IOException {
+    void authorizeByPhone() {
         String authorizationId = getScaAuthorizationId();
         String verificationToken = getRequestVerificationToken();
         String transactionId = initTransaction(authorizationId, verificationToken);
@@ -37,18 +38,22 @@ class MbankAuthorizer {
         finalizeAuthorization(authorizationId, verificationToken);
     }
 
-    private void startFinalizingTransaction(String token) throws IOException {
-        Connection.Response conn = Jsoup.connect(START_FINALIZING_AUTHORIZATON_URL)
-                .header("x-request-verification-token", token)
-                .header("content-type", "application/json")
-                .requestBody("{}")
-                .ignoreContentType(true)
-                .cookies(cookies)
-                .method(Connection.Method.POST)
-                .execute();
+    private void startFinalizingTransaction(String token) {
+        try {
+            Connection.Response conn = Jsoup.connect(START_FINALIZING_AUTHORIZATON_URL)
+                    .header("x-request-verification-token", token)
+                    .header("content-type", "application/json")
+                    .requestBody("{}")
+                    .ignoreContentType(true)
+                    .cookies(cookies)
+                    .method(Connection.Method.POST)
+                    .execute();
+        } catch (IOException e) {
+            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+        }
     }
 
-    private void waitForTransactionAuthorization(String transactionId) throws IOException {
+    private void waitForTransactionAuthorization(String transactionId) {
         JSONObject responseJson;
         int iteration = 0;
         String transactionStatus;
@@ -58,12 +63,17 @@ class MbankAuthorizer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Connection.Response response = Jsoup.connect(AUTHORIZATION_STATUS_URL)
-                    .ignoreContentType(true)
-                    .cookies(cookies)
-                    .data("TranId", transactionId)
-                    .method(Connection.Method.POST)
-                    .execute();
+            Connection.Response response = null;
+            try {
+                response = Jsoup.connect(AUTHORIZATION_STATUS_URL)
+                        .ignoreContentType(true)
+                        .cookies(cookies)
+                        .data("TranId", transactionId)
+                        .method(Connection.Method.POST)
+                        .execute();
+            } catch (IOException e) {
+                throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+            }
             responseJson = new JSONObject(response.body());
             transactionStatus = responseJson.get("Status").toString();
             iteration++;
@@ -73,30 +83,40 @@ class MbankAuthorizer {
         }
     }
 
-    private void finalizeAuthorization(String authorizationId, String token) throws IOException {
+    private void finalizeAuthorization(String authorizationId, String token) {
         JSONObject requestBody = new JSONObject();
         requestBody.put("scaAuthorizationId", authorizationId);
-        Connection.Response response = Jsoup.connect(FINALIZE_AUTHORIZATION_URL)
-                .header("content-type", "application/json")
-                .header("x-request-verification-token", token)
-                .requestBody(requestBody.toString())
-                .ignoreContentType(true)
-                .cookies(cookies)
-                .method(Connection.Method.POST)
-                .execute();
+        Connection.Response response = null;
+        try {
+            response = Jsoup.connect(FINALIZE_AUTHORIZATION_URL)
+                    .header("content-type", "application/json")
+                    .header("x-request-verification-token", token)
+                    .requestBody(requestBody.toString())
+                    .ignoreContentType(true)
+                    .cookies(cookies)
+                    .method(Connection.Method.POST)
+                    .execute();
+        } catch (IOException e) {
+            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+        }
         cookies = response.cookies();
     }
 
-    private String initTransaction(String authorizationId, String verificationToken) throws IOException {
+    private String initTransaction(String authorizationId, String verificationToken) {
         String requestBody = getInitTransactionBody(authorizationId);
-        Connection.Response response = Jsoup.connect(INIT_AUTHORIZATION_URL)
-                .header("x-request-verification-token", verificationToken)
-                .header("content-type", "application/json")
-                .ignoreContentType(true)
-                .cookies(cookies)
-                .requestBody(requestBody)
-                .method(Connection.Method.POST)
-                .execute();
+        Connection.Response response = null;
+        try {
+            response = Jsoup.connect(INIT_AUTHORIZATION_URL)
+                    .header("x-request-verification-token", verificationToken)
+                    .header("content-type", "application/json")
+                    .ignoreContentType(true)
+                    .cookies(cookies)
+                    .requestBody(requestBody)
+                    .method(Connection.Method.POST)
+                    .execute();
+        } catch (IOException e) {
+            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+        }
         MbankInitprepareResponseParser mbankInitprepareResponseParser = new MbankInitprepareResponseParser(response);
         return mbankInitprepareResponseParser.getTransactionId();
     }
@@ -112,22 +132,32 @@ class MbankAuthorizer {
         return requestBody.toString();
     }
 
-    private String getScaAuthorizationId() throws IOException {
-        Connection.Response response = Jsoup.connect(SCA_AUTHORIZATION_DATA_URL)
-                .ignoreContentType(true)
-                .cookies(cookies)
-                .method(Connection.Method.POST)
-                .execute();
+    private String getScaAuthorizationId() {
+        Connection.Response response = null;
+        try {
+            response = Jsoup.connect(SCA_AUTHORIZATION_DATA_URL)
+                    .ignoreContentType(true)
+                    .cookies(cookies)
+                    .method(Connection.Method.POST)
+                    .execute();
+        } catch (IOException e) {
+            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+        }
         MbankGetScaAuthorizationDataResponseParser mbankGetScaAuthorizationDataResponseParser = new MbankGetScaAuthorizationDataResponseParser(response);
         return mbankGetScaAuthorizationDataResponseParser.getScaAuthorizationId();
     }
 
-    private String getRequestVerificationToken() throws IOException {
-        Connection.Response response = Jsoup.connect(VERIFICATION_URL)
-                .ignoreContentType(true)
-                .method(Connection.Method.GET)
-                .cookies(cookies)
-                .execute();
+    private String getRequestVerificationToken() {
+        Connection.Response response = null;
+        try {
+            response = Jsoup.connect(VERIFICATION_URL)
+                    .ignoreContentType(true)
+                    .method(Connection.Method.GET)
+                    .cookies(cookies)
+                    .execute();
+        } catch (IOException e) {
+            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+        }
         MbankSetupDataResponseParser mbankSetupDataResponseParser = new MbankSetupDataResponseParser(response);
         return mbankSetupDataResponseParser.getAntiForgeryToken();
     }

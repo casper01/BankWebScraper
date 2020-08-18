@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 public class MbankWebScraper {
-    private static final String LOGIN_ERROR_MESSAGE = "Unable to log in";
-    private static final String AUTHORIZE_ERROR_MESSAGE = "Unable to authorize";
-    private static final String GET_BANK_ACCOUNTS_ERROR_MESSAGE = "Unable to get bank accounts";
     private final MbankSignInManager mbankSignInManager;
     private final MbankAuthorizer mbankAuthorizer;
     private final MbankAccountManager mbankAccountManager;
@@ -18,29 +15,17 @@ public class MbankWebScraper {
     }
 
     public void signIn() {
-        try {
-            mbankSignInManager.signIn();
-        } catch (IOException ex) {
-            throw new WebScraperException(LOGIN_ERROR_MESSAGE);
-        }
+        mbankSignInManager.signIn();
     }
 
     public void authorize() {
         System.out.println("Please authorize signing in by your phone");
         mbankAuthorizer.setCookies(mbankSignInManager.getCookies());
-        try {
-            mbankAuthorizer.authorizeByPhone();
-        } catch (IOException ex) {
-            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
-        }
+        mbankAuthorizer.authorizeByPhone();
     }
 
     public Collection<BankAccount> getBankAccounts() {
         mbankAccountManager.setCookies(mbankAuthorizer.getCookies());
-        try {
-            return mbankAccountManager.getBankAccounts();
-        } catch (IOException ex) {
-            throw new WebScraperException(GET_BANK_ACCOUNTS_ERROR_MESSAGE);
-        }
+        return mbankAccountManager.getBankAccounts();
     }
 }

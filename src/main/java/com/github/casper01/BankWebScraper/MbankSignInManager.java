@@ -13,6 +13,7 @@ import java.util.Map;
 
 class MbankSignInManager {
     private static final String LOGIN_URL = "https://online.mbank.pl/pl/LoginMain/Account/JsonLogin";
+    private static final String LOGIN_ERROR_MESSAGE = "Unable to log in";
     private final String login;
     private final String password;
     private Map<String, String> cookies  = new HashMap<>();
@@ -26,13 +27,18 @@ class MbankSignInManager {
         return cookies;
     }
 
-    void signIn() throws IOException {
-        Connection.Response response = Jsoup.connect(LOGIN_URL)
-                .ignoreContentType(true)
-                .data("UserName", login)
-                .data("Password", password)
-                .method(Connection.Method.POST)
-                .execute();
+    void signIn() {
+        Connection.Response response = null;
+        try {
+            response = Jsoup.connect(LOGIN_URL)
+                    .ignoreContentType(true)
+                    .data("UserName", login)
+                    .data("Password", password)
+                    .method(Connection.Method.POST)
+                    .execute();
+        } catch (IOException e) {
+            throw new WebScraperException(LOGIN_ERROR_MESSAGE);
+        }
         cookies = response.cookies();
         MbankJsonLoginResponseParser mbankJsonLoginResponseParser = new MbankJsonLoginResponseParser(response);
         if (!mbankJsonLoginResponseParser.isSuccessful()) {
