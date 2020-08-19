@@ -7,13 +7,17 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 class MbankAccountsGroupsResponseParserTest {
     private MbankAccountsGroupsResponseParser mbankSetupDataResponseParser;
 
     @Test
     void getAllAccountsOneAccountInfoReturnsOneElementCollection() {
         String body = "{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.01,\"currency\":\"PLN\"},\"accountsGroups\":[{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.01,\"currency\":\"PLN\"},\"header\":\"Personal\",\"accounts\":[{\"primaryAction\":{\"name\":null,\"url\":\"/pl/Accounts/Accounts/GetTransferDomestic\"},\"balance\":0.01,\"name\":\"mKonto Intensive\",\"currency\":\"PLN\",\"customName\":\"\",\"id\":\"xxxxxxxxxxxxxxxxxxxxxxxIDxxxxxxxxxxxxxxxxxxxxxxxxx\",\"accountNumber\":\"xx xxxx xxxx xxxx xxxx xxxx xxxx\"}]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Vat\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Foreigns\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Authorities\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Others\",\"accounts\":[]}]}";
-        Connection.Response response = new ConnectionResponseMock(body);
+        Connection.Response response = mock(Connection.Response.class);
+        when(response.body()).thenReturn(body);
         mbankSetupDataResponseParser = new MbankAccountsGroupsResponseParser(response);
         Collection<BankAccount> expected = new LinkedList<>();
         expected.add(new BankAccount("mKonto Intensive", 0.01));
@@ -24,7 +28,8 @@ class MbankAccountsGroupsResponseParserTest {
     @Test
     void getAllAccountsZeroAccountInfosReturnsEmptyCollection() {
         String body = "{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.00,\"currency\":\"PLN\"},\"accountsGroups\":[{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0.01,\"currency\":\"PLN\"},\"header\":\"Personal\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Vat\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Foreigns\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Authorities\",\"accounts\":[]},{\"summary\":{\"isRoundedToOneCurrency\":false,\"balance\":0,\"currency\":\"PLN\"},\"header\":\"Others\",\"accounts\":[]}]}";
-        Connection.Response response = new ConnectionResponseMock(body);
+        Connection.Response response = mock(Connection.Response.class);
+        when(response.body()).thenReturn(body);
         mbankSetupDataResponseParser = new MbankAccountsGroupsResponseParser(response);
         Collection<BankAccount> bankAccounts = mbankSetupDataResponseParser.getAllAccounts();
         Assertions.assertTrue(bankAccounts.isEmpty());
@@ -33,7 +38,8 @@ class MbankAccountsGroupsResponseParserTest {
     @Test
     void constructorEmptyResponseThrowsException() {
         String body = "";
-        Connection.Response response = new ConnectionResponseMock(body);
+        Connection.Response response = mock(Connection.Response.class);
+        when(response.body()).thenReturn(body);
         Assertions.assertThrows(WebScraperException.class, () -> mbankSetupDataResponseParser = new MbankAccountsGroupsResponseParser(response));
     }
 }

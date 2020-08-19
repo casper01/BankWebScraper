@@ -13,6 +13,7 @@ Dependencies are downloaded automatically while creating package.
 - json ver. 20200518
 - jsoup ver. 1.13.1
 - junit ver. 5.7.0-RC1
+- mocky ver. 3.5.0
 
 ## Usage
 Compiling and creating `jar` package: 
