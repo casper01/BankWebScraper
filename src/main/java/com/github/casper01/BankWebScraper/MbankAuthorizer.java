@@ -38,60 +38,10 @@ class MbankAuthorizer {
         finalizeAuthorization(authorizationId, verificationToken);
     }
 
-    private void startFinalizingTransaction(String token) {
-        try {
-            Connection.Response conn = Jsoup.connect(START_FINALIZING_AUTHORIZATON_URL)
-                    .header("x-request-verification-token", token)
-                    .header("content-type", "application/json")
-                    .requestBody("{}")
-                    .ignoreContentType(true)
-                    .cookies(cookies)
-                    .method(Connection.Method.POST)
-                    .execute();
-        } catch (IOException e) {
-            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
-        }
-    }
-
-    private void waitForTransactionAuthorization(String transactionId) {
-        JSONObject responseJson;
-        int iteration = 0;
-        String transactionStatus;
-        do {
-            try {
-                Thread.sleep(STATUS_CHECK_INTERVAL_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Connection.Response response = null;
-            try {
-                response = Jsoup.connect(AUTHORIZATION_STATUS_URL)
-                        .ignoreContentType(true)
-                        .cookies(cookies)
-                        .data("TranId", transactionId)
-                        .method(Connection.Method.POST)
-                        .execute();
-            } catch (IOException e) {
-                throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
-            }
-            responseJson = new JSONObject(response.body());
-            transactionStatus = responseJson.get("Status").toString();
-            iteration++;
-        } while (iteration < STATUS_CHECK_MAX_ITERATIONS && (transactionStatus.equals("Prepared") || transactionStatus.equals("PreAuthorized")));
-        if (!transactionStatus.equals("Authorized")) {
-            throw new WebScraperException("Could not authenticate");
-        }
-    }
-
-    private void finalizeAuthorization(String authorizationId, String token) {
-        JSONObject requestBody = new JSONObject();
-        requestBody.put("scaAuthorizationId", authorizationId);
+    private String getScaAuthorizationId() {
         Connection.Response response = null;
         try {
-            response = Jsoup.connect(FINALIZE_AUTHORIZATION_URL)
-                    .header("content-type", "application/json")
-                    .header("x-request-verification-token", token)
-                    .requestBody(requestBody.toString())
+            response = Jsoup.connect(SCA_AUTHORIZATION_DATA_URL)
                     .ignoreContentType(true)
                     .cookies(cookies)
                     .method(Connection.Method.POST)
@@ -99,7 +49,23 @@ class MbankAuthorizer {
         } catch (IOException e) {
             throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
         }
-        cookies = response.cookies();
+        MbankGetScaAuthorizationDataResponseParser mbankGetScaAuthorizationDataResponseParser = new MbankGetScaAuthorizationDataResponseParser(response);
+        return mbankGetScaAuthorizationDataResponseParser.getScaAuthorizationId();
+    }
+
+    private String getRequestVerificationToken() {
+        Connection.Response response = null;
+        try {
+            response = Jsoup.connect(VERIFICATION_URL)
+                    .ignoreContentType(true)
+                    .method(Connection.Method.GET)
+                    .cookies(cookies)
+                    .execute();
+        } catch (IOException e) {
+            throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+        }
+        MbankSetupDataResponseParser mbankSetupDataResponseParser = new MbankSetupDataResponseParser(response);
+        return mbankSetupDataResponseParser.getAntiForgeryToken();
     }
 
     private String initTransaction(String authorizationId, String verificationToken) {
@@ -132,10 +98,42 @@ class MbankAuthorizer {
         return requestBody.toString();
     }
 
-    private String getScaAuthorizationId() {
-        Connection.Response response = null;
+    private void waitForTransactionAuthorization(String transactionId) {
+        JSONObject responseJson;
+        int iteration = 0;
+        String transactionStatus;
+        do {
+            try {
+                Thread.sleep(STATUS_CHECK_INTERVAL_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Connection.Response response = null;
+            try {
+                response = Jsoup.connect(AUTHORIZATION_STATUS_URL)
+                        .ignoreContentType(true)
+                        .cookies(cookies)
+                        .data("TranId", transactionId)
+                        .method(Connection.Method.POST)
+                        .execute();
+            } catch (IOException e) {
+                throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
+            }
+            responseJson = new JSONObject(response.body());
+            transactionStatus = responseJson.get("Status").toString();
+            iteration++;
+        } while (iteration < STATUS_CHECK_MAX_ITERATIONS && (transactionStatus.equals("Prepared") || transactionStatus.equals("PreAuthorized")));
+        if (!transactionStatus.equals("Authorized")) {
+            throw new WebScraperException("Could not authenticate");
+        }
+    }
+
+    private void startFinalizingTransaction(String token) {
         try {
-            response = Jsoup.connect(SCA_AUTHORIZATION_DATA_URL)
+            Connection.Response conn = Jsoup.connect(START_FINALIZING_AUTHORIZATON_URL)
+                    .header("x-request-verification-token", token)
+                    .header("content-type", "application/json")
+                    .requestBody("{}")
                     .ignoreContentType(true)
                     .cookies(cookies)
                     .method(Connection.Method.POST)
@@ -143,22 +141,24 @@ class MbankAuthorizer {
         } catch (IOException e) {
             throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
         }
-        MbankGetScaAuthorizationDataResponseParser mbankGetScaAuthorizationDataResponseParser = new MbankGetScaAuthorizationDataResponseParser(response);
-        return mbankGetScaAuthorizationDataResponseParser.getScaAuthorizationId();
     }
 
-    private String getRequestVerificationToken() {
+    private void finalizeAuthorization(String authorizationId, String token) {
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("scaAuthorizationId", authorizationId);
         Connection.Response response = null;
         try {
-            response = Jsoup.connect(VERIFICATION_URL)
+            response = Jsoup.connect(FINALIZE_AUTHORIZATION_URL)
+                    .header("content-type", "application/json")
+                    .header("x-request-verification-token", token)
+                    .requestBody(requestBody.toString())
                     .ignoreContentType(true)
-                    .method(Connection.Method.GET)
                     .cookies(cookies)
+                    .method(Connection.Method.POST)
                     .execute();
         } catch (IOException e) {
             throw new WebScraperException(AUTHORIZE_ERROR_MESSAGE);
         }
-        MbankSetupDataResponseParser mbankSetupDataResponseParser = new MbankSetupDataResponseParser(response);
-        return mbankSetupDataResponseParser.getAntiForgeryToken();
+        cookies = response.cookies();
     }
 }
