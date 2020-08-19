@@ -1,5 +1,6 @@
-package com.github.casper01.BankWebScraper;
+package com.github.casper01.BankWebScraper.parsers;
 
+import com.github.casper01.BankWebScraper.exceptions.WebScraperException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;

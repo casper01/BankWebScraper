@@ -1,6 +1,8 @@
-package com.github.casper01.BankWebScraper;
+package com.github.casper01.BankWebScraper.parsers;
 
 
+import com.github.casper01.BankWebScraper.BankAccount;
+import com.github.casper01.BankWebScraper.exceptions.WebScraperException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -8,18 +10,18 @@ import org.jsoup.Connection;
 import java.util.Collection;
 import java.util.LinkedList;
 
-class MbankAccountsGroupsResponseParser extends MbankJsonResponseParser {
+public class MbankAccountsGroupsResponseParser extends MbankJsonResponseParser {
     private static final String ACCOUNTS_GROUP_KEY = "accountsGroups";
     private static final String ACCOUNTS_GROUP_ELEMENT_KEY = "accounts";
     private static final String ACCOUNT_NAME_KEY = "name";
     private static final String ACCOUNT_BALANCE_KEY = "balance";
     private static final String ERROR_MESSAGE = "Incorrect AccountsGroups response";
 
-    MbankAccountsGroupsResponseParser(Connection.Response response) {
+    public MbankAccountsGroupsResponseParser(Connection.Response response) {
         super(response);
     }
 
-    Collection<BankAccount> getAllAccounts() {
+    public Collection<BankAccount> getAllAccounts() {
         if (!getJSON().has(ACCOUNTS_GROUP_KEY)) {
             throw new WebScraperException(ERROR_MESSAGE);
         }

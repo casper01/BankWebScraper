@@ -1,24 +1,23 @@
-package com.github.casper01.BankWebScraper;
+package com.github.casper01.BankWebScraper.apiManagers;
 
+import com.github.casper01.BankWebScraper.exceptions.LoginException;
+import com.github.casper01.BankWebScraper.exceptions.WebScraperException;
+import com.github.casper01.BankWebScraper.parsers.MbankJsonLoginResponseParser;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-class MbankSignInManager {
+public class MbankSignInManager {
     private static final String LOGIN_URL = "https://online.mbank.pl/pl/LoginMain/Account/JsonLogin";
     private static final String LOGIN_ERROR_MESSAGE = "Unable to log in";
     private final String login;
     private final String password;
     private Map<String, String> cookies  = new HashMap<>();
 
-    MbankSignInManager(String login, String password) {
+    public MbankSignInManager(String login, String password) {
         this.login = login;
         this.password = password;
     }
@@ -27,7 +26,7 @@ class MbankSignInManager {
         return cookies;
     }
 
-    void signIn() {
+    public void signIn() {
         Connection.Response response = null;
         try {
             response = Jsoup.connect(LOGIN_URL)

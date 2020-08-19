@@ -1,9 +1,6 @@
 package com.github.casper01.BankWebScraper;
 
-import java.io.BufferedReader;
 import java.io.Console;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collection;
 
 public class Main {

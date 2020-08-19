@@ -1,5 +1,9 @@
-package com.github.casper01.BankWebScraper;
+package com.github.casper01.BankWebScraper.apiManagers;
 
+import com.github.casper01.BankWebScraper.exceptions.WebScraperException;
+import com.github.casper01.BankWebScraper.parsers.MbankGetScaAuthorizationDataResponseParser;
+import com.github.casper01.BankWebScraper.parsers.MbankInitprepareResponseParser;
+import com.github.casper01.BankWebScraper.parsers.MbankSetupDataResponseParser;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -8,7 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-class MbankAuthorizer {
+public class MbankAuthorizer {
     private static final String SCA_AUTHORIZATION_DATA_URL = "https://online.mbank.pl/pl/Sca/GetScaAuthorizationData";
     private static final String VERIFICATION_URL = "https://online.mbank.pl/pl/setup/data";
     private static final String INIT_AUTHORIZATION_URL = "https://online.mbank.pl/api/auth/initprepare";
@@ -29,7 +33,7 @@ class MbankAuthorizer {
         this.cookies = cookies;
     }
 
-    void authorizeByPhone() {
+    public void authorizeByPhone() {
         String authorizationId = getScaAuthorizationId();
         String verificationToken = getRequestVerificationToken();
         String transactionId = initTransaction(authorizationId, verificationToken);

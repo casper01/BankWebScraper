@@ -1,6 +1,9 @@
 package com.github.casper01.BankWebScraper;
 
-import java.io.IOException;
+import com.github.casper01.BankWebScraper.apiManagers.MbankAccountManager;
+import com.github.casper01.BankWebScraper.apiManagers.MbankAuthorizer;
+import com.github.casper01.BankWebScraper.apiManagers.MbankSignInManager;
+
 import java.util.Collection;
 
 public class MbankWebScraper {

@@ -1,5 +1,8 @@
-package com.github.casper01.BankWebScraper;
+package com.github.casper01.BankWebScraper.parsers;
 
+import com.github.casper01.BankWebScraper.BankAccount;
+import com.github.casper01.BankWebScraper.exceptions.WebScraperException;
+import com.github.casper01.BankWebScraper.parsers.MbankAccountsGroupsResponseParser;
 import org.jsoup.Connection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
