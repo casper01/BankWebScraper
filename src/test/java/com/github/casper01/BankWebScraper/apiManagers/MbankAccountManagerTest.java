@@ -4,7 +4,6 @@ import com.github.casper01.BankWebScraper.BankAccount;
 import com.github.casper01.BankWebScraper.CredentialsLoader;
 import com.github.casper01.BankWebScraper.exceptions.WebScraperException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
