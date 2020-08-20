@@ -21,10 +21,18 @@ public class MbankWebScraper {
         mbankSignInManager.signIn();
     }
 
+    public boolean isSignedIn() {
+        return mbankSignInManager.isSignedIn();
+    }
+
     public void authorize() {
         System.out.println("Please authorize signing in by your phone");
         mbankAuthorizer.setCookies(mbankSignInManager.getCookies());
         mbankAuthorizer.authorizeByPhone();
+    }
+
+    public boolean isAuthorized() {
+        return mbankAuthorizer.isAuthorized();
     }
 
     public Collection<BankAccount> getBankAccounts() {
