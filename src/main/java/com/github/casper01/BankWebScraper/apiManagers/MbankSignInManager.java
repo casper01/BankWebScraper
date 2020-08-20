@@ -15,11 +15,13 @@ public class MbankSignInManager {
     private static final String LOGIN_ERROR_MESSAGE = "Unable to log in";
     private final String login;
     private final String password;
-    private Map<String, String> cookies  = new HashMap<>();
+    private Map<String, String> cookies = new HashMap<>();
+    private boolean isSignedIn;
 
     public MbankSignInManager(String login, String password) {
         this.login = login;
         this.password = password;
+        this.isSignedIn = false;
     }
 
     public Map<String, String> getCookies() {
@@ -47,5 +49,12 @@ public class MbankSignInManager {
                 throw new LoginException("Could not sign in");
             }
         }
+        else {
+            isSignedIn = true;
+        }
+    }
+
+    public boolean isSignedIn() {
+        return isSignedIn;
     }
 }
