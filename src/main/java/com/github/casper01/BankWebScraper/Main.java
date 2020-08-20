@@ -1,6 +1,5 @@
 package com.github.casper01.BankWebScraper;
 
-import java.io.IOException;
 import java.util.Collection;
 
 public class Main {

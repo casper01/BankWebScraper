@@ -1,11 +1,9 @@
 package com.github.casper01.BankWebScraper;
 
-import com.github.casper01.BankWebScraper.apiManagers.MbankAccountManager;
-import com.github.casper01.BankWebScraper.apiManagers.MbankAuthorizer;
-import com.github.casper01.BankWebScraper.apiManagers.MbankSignInManager;
 import com.github.casper01.BankWebScraper.exceptions.LoginException;
 import com.github.casper01.BankWebScraper.exceptions.WebScraperException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -41,6 +39,7 @@ class MbankWebScraperTest {
         Assertions.assertThrows(WebScraperException.class, () -> mbankWebScraper.authorize());
     }
 
+    @Disabled
     @Test
     void authorizeByPhoneSuccessIsAuthorized() {
         CredentialsLoader credentialsLoader = new CredentialsLoader();
@@ -63,6 +62,7 @@ class MbankWebScraperTest {
         Assertions.assertThrows(WebScraperException.class, () -> mbankWebScraper.getBankAccounts());
     }
 
+    @Disabled
     @Test
     void getBankAccountsSuccessReturnsNotEmptyAccountList() {
         CredentialsLoader credentialsLoader = new CredentialsLoader();

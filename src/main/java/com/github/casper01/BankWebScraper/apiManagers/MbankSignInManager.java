@@ -48,8 +48,7 @@ public class MbankSignInManager extends MbankApiManager {
             else {
                 throw new LoginException("Could not sign in");
             }
-        }
-        else {
+        } else {
             isSignedIn = true;
         }
     }
