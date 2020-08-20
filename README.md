@@ -15,22 +15,26 @@ Dependencies are downloaded automatically while creating package.
 - junit ver. 5.7.0-RC1
 - mocky ver. 3.5.0
 
-## Usage
-Compiling and creating `jar` package: 
+## Prerequisites
+You need to set account login and password in file: `src/main/resources/credentials.properties`.
+Exemplary file:
+```
+login=putYourLoginHere
+password=putYourPasswordHere
+```
+
+## Compiling
+In order to compile and create `jar` package, you need to be in root directory (with `pom.xml` file). Run the command: 
 ```
 mvn package
 ```
-Running:
+
+## Running app
 ```
 java -jar target/BankWebScraper-1.0-jar-with-dependencies.jar
 ```
-You will be asked to enter login and password of your mBank account.
-```
-Login: admin
-Password: 
-```
-After successful signing in, you should authorize in your smartphone mBank app. 
-Finally, all accounts with their balances will be printed to output. Example:
+You will be asked to authorize in your smartphone mBank app. 
+Afterwards, all accounts with their balances will be printed to output. Example:
 ```
 > Accounts downloaded:
 mKonto 1: 0.01
