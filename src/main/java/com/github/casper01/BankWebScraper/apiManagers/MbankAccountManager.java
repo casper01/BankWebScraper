@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MbankAccountManager {
-    private static final String  ACCOUNT_GROUPS_URL = "https://online.mbank.pl/pl/Accounts/Accounts/AccountsGroups";
+public class MbankAccountManager extends MbankApiManager {
+    private static final String  ACCOUNT_GROUPS_URL = getBaseUrl() + "/pl/Accounts/Accounts/AccountsGroups";
     private static final String GET_BANK_ACCOUNTS_ERROR_MESSAGE = "Unable to get bank accounts";
     private Map<String, String> cookies = new HashMap<>();
 

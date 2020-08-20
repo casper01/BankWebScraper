@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MbankSignInManager {
-    private static final String LOGIN_URL = "https://online.mbank.pl/pl/LoginMain/Account/JsonLogin";
+public class MbankSignInManager extends MbankApiManager {
+    private static final String LOGIN_URL = getBaseUrl() + "/pl/LoginMain/Account/JsonLogin";
     private static final String LOGIN_ERROR_MESSAGE = "Unable to log in";
     private final String login;
     private final String password;

@@ -12,13 +12,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MbankAuthorizer {
-    private static final String SCA_AUTHORIZATION_DATA_URL = "https://online.mbank.pl/pl/Sca/GetScaAuthorizationData";
-    private static final String VERIFICATION_URL = "https://online.mbank.pl/pl/setup/data";
-    private static final String INIT_AUTHORIZATION_URL = "https://online.mbank.pl/api/auth/initprepare";
-    private static final String START_FINALIZING_AUTHORIZATON_URL = "https://online.mbank.pl/api/auth/execute";
-    private static final String FINALIZE_AUTHORIZATION_URL = "https://online.mbank.pl/pl/Sca/FinalizeAuthorization";
-    private static final String AUTHORIZATION_STATUS_URL = "https://online.mbank.pl/api/auth/status";
+public class MbankAuthorizer extends MbankApiManager {
+    private static final String SCA_AUTHORIZATION_DATA_URL = getBaseUrl() + "/pl/Sca/GetScaAuthorizationData";
+    private static final String VERIFICATION_URL = getBaseUrl() + "/pl/setup/data";
+    private static final String INIT_AUTHORIZATION_URL = getBaseUrl() + "/api/auth/initprepare";
+    private static final String START_FINALIZING_AUTHORIZATON_URL = getBaseUrl() + "/api/auth/execute";
+    private static final String FINALIZE_AUTHORIZATION_URL = getBaseUrl() + "/pl/Sca/FinalizeAuthorization";
+    private static final String AUTHORIZATION_STATUS_URL = getBaseUrl() + "/api/auth/status";
     private static final String AUTHORIZE_ERROR_MESSAGE = "Unable to authorize";
     private static final int STATUS_CHECK_INTERVAL_MS = 1000;
     private static final int STATUS_CHECK_MAX_ITERATIONS = 300;
