@@ -23,6 +23,7 @@ public class MbankAuthorizer {
     private static final int STATUS_CHECK_INTERVAL_MS = 1000;
     private static final int STATUS_CHECK_MAX_ITERATIONS = 300;
     private Map<String, String> cookies = new HashMap<>();
+    private boolean isAuthorized = false;
 
 
     public Map<String, String> getCookies() {
@@ -33,6 +34,10 @@ public class MbankAuthorizer {
         this.cookies = cookies;
     }
 
+    public boolean isAuthorized() {
+        return isAuthorized;
+    }
+
     public void authorizeByPhone() {
         String authorizationId = getScaAuthorizationId();
         String verificationToken = getRequestVerificationToken();
@@ -40,6 +45,7 @@ public class MbankAuthorizer {
         waitForTransactionAuthorization(transactionId);
         startFinalizingTransaction(verificationToken);
         finalizeAuthorization(authorizationId, verificationToken);
+        isAuthorized = true;
     }
 
     private String getScaAuthorizationId() {
